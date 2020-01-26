@@ -34,7 +34,7 @@ class Cell:
 
 class ConnectFourGameState(GameState):
     def __init__(self):
-        self.board = np.full((ROWS, COLUMNS), Cell.EMPTY)
+        self.board = np.full((ROWS, COLUMNS), Cell.EMPTY, dtype=float)
         self.active_player = Cell.RED
         self.game_over = False
         self.remaining_cells = ROWS * COLUMNS
