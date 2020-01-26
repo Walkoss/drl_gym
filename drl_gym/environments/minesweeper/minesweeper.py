@@ -5,18 +5,6 @@ from typing import List
 import numpy as np
 from drl_gym.contracts import GameState
 
-pygame.init()
-COLUMNS = 9
-ROWS = 9
-SQUARE_SIZE = 100
-WIDTH = COLUMNS * SQUARE_SIZE
-HEIGHT = (ROWS + 1) * SQUARE_SIZE
-BLUE = (0, 0, 255)
-BLACK = (0, 0, 0)
-RED = (255, 0, 0)
-YELLOW = (255, 255, 0)
-DRAWING_DELAY = 500
-
 
 class Cell:
     EMPTY = -1
@@ -24,88 +12,83 @@ class Cell:
 
 
 class MinesweeperGameState(GameState):
-    def __init__(self):
+    def __init__(self, random_map: bool = False):
         self.game_over = False
         self.scores = np.array([0], dtype=int)
         self.available_actions = [i for i in range(81)]
-        self.board = np.full(
-            (9, 9), Cell.EMPTY, dtype=np.float
-        )  # -2 = bombe, -1 = vide, 0 à 8 = nombre de bombes qui entourent
-        self.solution_grid = np.array(
-            [
-                [1, 1, 1, 0, 0, 1, 1, 1, 0],
-                [1, -2, 2, 1, 1, 1, -2, 1, 0],
-                [1, 1, 2, -2, 1, 1, 1, 1, 0],
-                [1, 1, 2, 1, 1, 1, 1, 1, 0],
-                [1, -2, 1, 1, -2, 2, -2, 2, 0],
-                [1, 1, 2, 1, 1, 2, 2, -2, 2],
-                [1, 2, -2, 1, 0, 1, 1, 1, 0],
-                [1, -2, 2, 0, 0, 1, -2, 1, 0],
-                [1, 1, 1, 0, 0, 1, 1, 1, 0],
-            ],
-            dtype=np.float,
-        )
+        self.board = np.full((9, 9), Cell.EMPTY, dtype=np.float)
+
+        if random_map:
+            self.solution_grid = np.zeros((9, 9), dtype=np.float)
+        else:
+            self.solution_grid = np.array(
+                [
+                    [1, 1, 1, 0, 0, 1, 1, 1, 0],
+                    [1, -2, 2, 1, 1, 1, -2, 1, 0],
+                    [1, 1, 2, -2, 1, 1, 1, 1, 0],
+                    [1, 1, 2, 1, 1, 1, 1, 1, 0],
+                    [1, -2, 1, 1, -2, 2, -2, 2, 0],
+                    [1, 1, 2, 1, 1, 2, 2, -2, 2],
+                    [1, 2, -2, 1, 0, 1, 1, 1, 0],
+                    [1, -2, 2, 0, 0, 1, -2, 1, 0],
+                    [1, 1, 1, 0, 0, 1, 1, 1, 0],
+                ],
+                dtype=np.float,
+            )
 
         # Pygame
         self.screen = None
         self.font = None
 
-        """for n in range(10):
+        if random_map:
+            for n in range(10):
+                self.place_bomb()
+
+            for r in range(9):
+                for c in range(9):
+                    value = self.solution_grid[r][c]
+                    if value == Cell.BOMB:
+                        self.update_values(r, c)
+
+    def place_bomb(self):
+        r = random.randint(0, 8)
+        c = random.randint(0, 8)
+        current_row = self.solution_grid[r]
+        if not current_row[c] == Cell.BOMB:
+            current_row[c] = Cell.BOMB
+        else:
             self.place_bomb(self.solution_grid)
 
-        for r in range(9):
-            for c in range(9):
-                value = self.l(r, c, self.solution_grid)
-                if value == -2:
-                    self.update_values(r, c, self.solution_grid)"""
+    def update_values(self, rn, c):
+        if rn - 1 > -1:
+            r = self.solution_grid[rn - 1]
+            if c - 1 > -1:
+                if not r[c - 1] == Cell.BOMB:
+                    r[c - 1] += 1
+            if not r[c] == Cell.BOMB:
+                r[c] += 1
+            if 9 > c + 1:
+                if not r[c + 1] == Cell.BOMB:
+                    r[c + 1] += 1
 
-    # def place_bomb(self, world):
-    #     r = random.randint(0, 8)
-    #     c = random.randint(0, 8)
-    #     current_row = world[r]
-    #     if not current_row[c] == Cell.BOMB:
-    #         current_row[c] = Cell.BOMB
-    #     else:
-    #         self.place_bomb(world)
-    #
-    # def update_values(self, rn, c, world):
-    #     # Row above.
-    #     if rn - 1 > -1:
-    #         r = world[rn - 1]
-    #         if c - 1 > -1:
-    #             if not r[c - 1] == Cell.BOMB:
-    #                 r[c - 1] += 1
-    #         if not r[c] == -2:
-    #             r[c] += 1
-    #         if 9 > c + 1:
-    #             if not r[c + 1] == Cell.BOMB:
-    #                 r[c + 1] += 1
-    #
-    #     # Same row.
-    #     r = world[rn]
-    #     if c - 1 > -1:
-    #         if not r[c - 1] == Cell.BOMB:
-    #             r[c - 1] += 1
-    #     if 9 > c + 1:
-    #         if not r[c + 1] == Cell.BOMB:
-    #             r[c + 1] += 1
-    #
-    #     # Row below.
-    #     if 9 > rn + 1:
-    #         r = world[rn + 1]
-    #         if c - 1 > -1:
-    #             if not r[c - 1] == Cell.BOMB:
-    #                 r[c - 1] += 1
-    #         if not r[c] == Cell.BOMB:
-    #             r[c] += 1
-    #         if 9 > c + 1:
-    #             if not r[c + 1] == Cell.BOMB:
-    #                 r[c + 1] += 1
+        r = self.solution_grid[rn]
+        if c - 1 > -1:
+            if not r[c - 1] == Cell.BOMB:
+                r[c - 1] += 1
+        if 9 > c + 1:
+            if not r[c + 1] == Cell.BOMB:
+                r[c + 1] += 1
 
-    # def l(self, r, c, world):
-    #     row = world[r]
-    #     c = row[c]
-    #     return c
+        if 9 > rn + 1:
+            r = self.solution_grid[rn + 1]
+            if c - 1 > -1:
+                if not r[c - 1] == Cell.BOMB:
+                    r[c - 1] += 1
+            if not r[c] == Cell.BOMB:
+                r[c] += 1
+            if 9 > c + 1:
+                if not r[c + 1] == Cell.BOMB:
+                    r[c + 1] += 1
 
     def player_count(self) -> int:
         return 1
@@ -194,7 +177,7 @@ class MinesweeperGameState(GameState):
         return 11 ** 81  # Nbr état possible d'une case ** (nbr row * nbr columns)
 
     def get_action_space_size(self) -> int:
-        return len(self.available_actions)
+        return 81
 
     def get_vectorized_state(self, mode: str = None) -> np.ndarray:
         if mode:
