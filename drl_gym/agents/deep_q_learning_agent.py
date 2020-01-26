@@ -69,4 +69,4 @@ class DeepQLearningAgent(Agent):
             self.r = None
 
     def save_model(self, filename: str):
-        self.Q.save_model(name)
+        self.Q.save_model(filename)
