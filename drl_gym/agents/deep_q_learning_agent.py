@@ -18,12 +18,14 @@ class DeepQLearningAgent(Agent):
         epsilon: float = 0.1,
         hidden_layers_count: int = 5,
         neurons_per_hidden_layer: int = 128,
+        activation: str = 'tanh'
     ):
         self.Q = DQNBrain(
             output_dim=action_space_size,
             learning_rate=alpha,
             hidden_layers_count=hidden_layers_count,
             neurons_per_hidden_layer=neurons_per_hidden_layer,
+            activation=activation
         )
         self.action_space_size = action_space_size
         self.s = None
