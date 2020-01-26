@@ -11,18 +11,46 @@ class MinesweeperGameState(GameState):
     def __init__(self):
         self.game_over = False
         self.scores = np.array([0], dtype=np.float)
-        self.available_actions = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23,
-                                  24]
-        self.board = np.array([
-            [-1, -1, -1, -1, -1, -1, -1, -1],
-            [-1, -1, -1, -1, -1, -1, -1, -1],
-            [-1, -1, -1, -1, -1, -1, -1, -1],
-            [-1, -1, -1, -1, -1, -1, -1, -1],
-            [-1, -1, -1, -1, -1, -1, -1, -1],
-            [-1, -1, -1, -1, -1, -1, -1, -1],
-            [-1, -1, -1, -1, -1, -1, -1, -1],
-            [-1, -1, -1, -1, -1, -1, -1, -1],
-        ], dtype=np.float)  # -2 = bombe, -1 = vide, 0 à 8 = nombre de bombes qui entourent
+        self.available_actions = [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            16,
+            17,
+            18,
+            19,
+            20,
+            21,
+            22,
+            23,
+            24,
+        ]
+        self.board = np.array(
+            [
+                [-1, -1, -1, -1, -1, -1, -1, -1],
+                [-1, -1, -1, -1, -1, -1, -1, -1],
+                [-1, -1, -1, -1, -1, -1, -1, -1],
+                [-1, -1, -1, -1, -1, -1, -1, -1],
+                [-1, -1, -1, -1, -1, -1, -1, -1],
+                [-1, -1, -1, -1, -1, -1, -1, -1],
+                [-1, -1, -1, -1, -1, -1, -1, -1],
+                [-1, -1, -1, -1, -1, -1, -1, -1],
+            ],
+            dtype=np.float,
+        )  # -2 = bombe, -1 = vide, 0 à 8 = nombre de bombes qui entourent
         self.world = np.zeros([8, 8], dtype=np.float)
         for n in range(10):
             self.place_bomb(self.world)
@@ -90,7 +118,7 @@ class MinesweeperGameState(GameState):
     def get_active_player(self) -> int:
         return 0
 
-    def clone(self) -> 'GameState':
+    def clone(self) -> "GameState":
         gs_copy = MinesweeperGameState()
         gs_copy.game_over = self.game_over
         gs_copy.scores = self.scores.copy()
@@ -101,9 +129,9 @@ class MinesweeperGameState(GameState):
         return gs_copy
 
     def step(self, player_index: int, action_index: int):
-        assert (not self.game_over)
-        assert (player_index == 0)
-        assert (action_index in self.available_actions)
+        assert not self.game_over
+        assert player_index == 0
+        assert action_index in self.available_actions
 
         (wanted_i, wanted_j) = (action_index // 5, action_index % 5)
 
