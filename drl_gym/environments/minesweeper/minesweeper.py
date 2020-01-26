@@ -166,7 +166,7 @@ class MinesweeperGameState(GameState):
     def get_action_space_size(self) -> int:
         return len(self.available_actions)
 
-    def get_vectorized_state(self) -> np.ndarray:
+    def get_vectorized_state(self, mode: str = None) -> np.ndarray:
         return self.board.reshape(81)
 
     def render(self):
