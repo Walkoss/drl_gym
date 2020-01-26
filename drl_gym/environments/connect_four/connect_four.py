@@ -142,7 +142,9 @@ class ConnectFourGameState(GameState):
     def get_action_space_size(self) -> int:
         return 7
 
-    def get_vectorized_state(self) -> np.ndarray:
+    def get_vectorized_state(self, mode: str = None) -> np.ndarray:
+        if mode == "2D":
+            return self.board.reshape((6, 7, 1))
         return self.board.reshape(42)
 
     def check_for_win_on_line(self, line) -> bool:

@@ -37,7 +37,7 @@ class GameState:
     def get_action_space_size(self) -> int:
         raise NotImplementedError
 
-    def get_vectorized_state(self) -> np.ndarray:
+    def get_vectorized_state(self, mode: str = None) -> np.ndarray:
         raise NotImplementedError
 
     def render(self):

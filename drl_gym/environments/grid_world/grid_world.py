@@ -112,7 +112,7 @@ class GridWorldGameState(GameState):
     def get_action_space_size(self) -> int:
         return len(self.available_actions)
 
-    def get_vectorized_state(self) -> np.ndarray:
+    def get_vectorized_state(self, mode: str = None) -> np.ndarray:
         return np.array(
             (
                 float(self.player_pos[0]) / self.world.shape[0] * 2.0 - 1.0,
