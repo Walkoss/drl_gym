@@ -1,5 +1,9 @@
 import argparse
 import ast
+import os
+
+os.environ["PYGAME_HIDE_SUPPORT_PROMPT"] = "hide"
+
 from typing import List
 
 import drl_gym
@@ -9,6 +13,7 @@ from drl_gym.agents import available_agents
 from drl_gym.contracts import GameState, Agent
 from drl_gym.runners import run_for_n_games_and_return_stats
 from drl_gym.utils import get_experiment_csv_writer
+
 
 DEFAULT_GAMES_COUNT = 100
 

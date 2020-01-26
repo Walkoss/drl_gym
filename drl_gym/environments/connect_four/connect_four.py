@@ -4,14 +4,10 @@ import os
 from typing import List
 
 import numpy as np
-
-os.environ["PYGAME_HIDE_SUPPORT_PROMPT"] = "hide"
 import pygame
 
 from drl_gym.contracts import GameState
 
-
-pygame.init()
 
 COLUMNS = 7
 ROWS = 6
@@ -204,6 +200,7 @@ class ConnectFourGameState(GameState):
 
     def render(self):
         if not self.screen and not self.font:
+            pygame.init()
             self.screen = pygame.display.set_mode((WIDTH, HEIGHT))
             self.font = pygame.font.SysFont("monospace", 75)
         if self.game_over:

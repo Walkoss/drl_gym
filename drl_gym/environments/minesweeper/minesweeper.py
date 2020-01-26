@@ -3,7 +3,19 @@ import random
 import hashlib
 from typing import List
 import numpy as np
+import pygame
+
 from drl_gym.contracts import GameState
+
+
+WIDTH = 500
+HEIGHT = 600
+DRAWING_DELAY = 500
+
+WHITE = (255, 255, 255)
+RED = (255, 0, 0)
+GREY = (127, 127, 127)
+BLACK = (0, 0, 0)
 
 
 class Cell:
@@ -17,6 +29,7 @@ class MinesweeperGameState(GameState):
         self.scores = np.array([0], dtype=int)
         self.available_actions = [i for i in range(81)]
         self.board = np.full((9, 9), Cell.EMPTY, dtype=np.float)
+        self.has_win = False
 
         if random_map:
             self.solution_grid = np.zeros((9, 9), dtype=np.float)
@@ -45,6 +58,10 @@ class MinesweeperGameState(GameState):
                     value = self.solution_grid[r][c]
                     if value == Cell.BOMB:
                         self.update_values(r, c)
+
+        # Pygame
+        self.screen = None
+        self.font = None
 
     def place_bomb(self):
         r = random.randint(0, 8)
@@ -120,8 +137,10 @@ class MinesweeperGameState(GameState):
         if potential_cell_type == Cell.BOMB:
             self.game_over = True
         elif potential_cell_type == 0:
+            self.scores[player_index] += 1
             self.reveal(wanted_i, wanted_j)
         elif np.sum(self.board == Cell.EMPTY) == 10:  # Victoire -> fin de jeu
+            self.has_win = True
             self.game_over = True
         else:
             self.scores[player_index] += 1
@@ -134,9 +153,7 @@ class MinesweeperGameState(GameState):
                 and self.board[neighbor_r, neighbor_c] == Cell.EMPTY
             ):
                 self.board[neighbor_r, neighbor_c] = 0
-                self.available_actions.remove(neighbor_r * 9 + neighbor_c)
-                self.reveal(neighbor_r, neighbor_c)
-                self.scores[0] += 1
+                self.step(self.get_active_player(), neighbor_r * 9 + neighbor_c)
 
     def get_neighbors(self, wanted_i, wanted_j):
         neighbors = []
@@ -182,4 +199,84 @@ class MinesweeperGameState(GameState):
         return self.board.reshape(81)
 
     def render(self):
-        print(self)
+        if not self.screen and not self.font:
+            pygame.init()
+            self.screen = pygame.display.set_mode((WIDTH, HEIGHT))
+            self.font = pygame.font.SysFont("monospace", 20)
+            pygame.display.set_caption("Minesweeper")
+        self.screen.fill(WHITE)
+
+        pygame.draw.rect(self.screen, GREY, (0, 0, 500, 100))
+        pygame.draw.line(self.screen, BLACK, (0, 100), (500, 100), 4)
+
+        if not self.game_over:
+            text = self.font.render(
+                f"Scores: {self.scores[self.get_active_player()]}", True, BLACK
+            )
+            text_x = text.get_rect().width
+            text_y = text.get_rect().height
+            self.screen.blit(text, (((WIDTH / 2) - (text_x / 2)), (50 - (text_y / 2))))
+        elif self.has_win:  # win
+            text = self.font.render("You win", True, BLACK)
+            text_x = text.get_rect().width
+            text_y = text.get_rect().height
+            self.screen.blit(text, (((WIDTH / 2) - (text_x / 2)), (50 - (text_y / 2))))
+        else:  # loose
+            text = self.font.render("You lose", True, BLACK)
+            text_x = text.get_rect().width
+            text_y = text.get_rect().height
+            self.screen.blit(text, (((WIDTH / 2) - (text_x / 2)), (50 - (text_y / 2))))
+
+        for y in range(9):
+            for x in range(9):
+                if self.board[y][x] != Cell.EMPTY:
+                    if self.board[y][x] == Cell.BOMB:
+                        pygame.draw.rect(
+                            self.screen,
+                            RED,
+                            (
+                                x * (WIDTH / 9),
+                                (y * ((HEIGHT - 100) / 9)) + 100,
+                                (WIDTH / 9),
+                                ((HEIGHT - 100) / 9),
+                            ),
+                        )
+                    else:
+                        pygame.draw.rect(
+                            self.screen,
+                            GREY,
+                            (
+                                x * (WIDTH / 9),
+                                (y * ((HEIGHT - 100) / 9)) + 100,
+                                (WIDTH / 9),
+                                ((HEIGHT - 100) / 9),
+                            ),
+                        )
+                        text = self.font.render(str(int(self.board[y][x])), True, BLACK)
+                        text_x = text.get_rect().width
+                        text_y = text.get_rect().height
+                        self.screen.blit(
+                            text,
+                            (
+                                (x * (WIDTH / 9) + ((WIDTH / 9) / 2) - (text_x / 2)),
+                                (
+                                    (y * ((HEIGHT - 100) / 9))
+                                    + 100
+                                    + (((HEIGHT - 100) / 9) / 2)
+                                    - (text_y / 2)
+                                ),
+                            ),
+                        )
+                pygame.draw.rect(
+                    self.screen,
+                    BLACK,
+                    (
+                        x * (WIDTH / 9),
+                        (y * ((HEIGHT - 100) / 9)) + 100,
+                        WIDTH / 9,
+                        (HEIGHT - 100) / 9,
+                    ),
+                    2,
+                )
+        pygame.display.update()
+        pygame.time.delay(DRAWING_DELAY)
