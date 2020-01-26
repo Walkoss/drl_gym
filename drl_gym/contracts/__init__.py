@@ -51,5 +51,5 @@ class Agent:
     def observe(self, r: float, t: bool, player_index: int):
         raise NotImplementedError
 
-    def save_model(self, name: str):
+    def save_model(self, filename: str):
         raise NotImplementedError

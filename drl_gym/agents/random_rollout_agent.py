@@ -40,5 +40,5 @@ class RandomRolloutAgent(Agent):
     def observe(self, r: float, t: bool, player_index: int):
         pass
 
-    def save_model(self, name: str):
+    def save_model(self, filename: str):
         pass

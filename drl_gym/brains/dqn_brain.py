@@ -30,3 +30,6 @@ class DQNBrain:
             1 - chosen_action_mask
         ) * self.predict(state)
         self.model.train_on_batch(np.array((state,)), np.array((target_vec,)))
+
+    def save_model(self, filename: str):
+        self.model.save_model(f"{filename}.h5")

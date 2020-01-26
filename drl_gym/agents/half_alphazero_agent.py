@@ -180,5 +180,5 @@ class HalfAlphaZeroAgent(Agent):
                 self.gains_batch = None
                 self.memory = dict()
 
-    def save_model(self, name: str):
+    def save_model(self, filename: str):
         pass

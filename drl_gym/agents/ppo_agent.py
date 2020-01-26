@@ -126,5 +126,5 @@ class PPOAgent(Agent):
             np.array(self.buffer["advantages"]),
         )
 
-    def save_model(self, name: str):
+    def save_model(self, filename: str):
         pass

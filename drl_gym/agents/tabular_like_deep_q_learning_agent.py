@@ -58,5 +58,5 @@ class TabularLikeDeepQLearningAgent(Agent):
             self.a = None
             self.r = None
 
-    def save_model(self, name: str):
+    def save_model(self, filename: str):
         pass
