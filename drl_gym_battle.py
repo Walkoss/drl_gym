@@ -30,6 +30,9 @@ def parse_args():
         "-c", "--games-count", type=check_positive, default=DEFAULT_GAMES_COUNT
     )
     parser.add_argument("--agent-params", type=ast.literal_eval, action="append")
+    parser.add_argument(
+        "-r", "--render", nargs="?", const=True, default=False,
+    )
     return parser.parse_args()
 
 
@@ -83,7 +86,7 @@ if __name__ == "__main__":
             writer=writer,
             show_progress=True,
             progress_desc=f"{'_'.join(args.agents)} on {args.games_count} games",
-            render=True if "CommandLine" in args.agents else False,
+            render=args.render,
         )
     finally:
         for i, agent in enumerate(agents):
