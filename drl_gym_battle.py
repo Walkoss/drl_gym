@@ -33,6 +33,7 @@ def parse_args():
     parser.add_argument(
         "-r", "--render", nargs="?", const=True, default=False,
     )
+    parser.add_argument("--game-state-params", type=ast.literal_eval)
     return parser.parse_args()
 
 
@@ -49,7 +50,12 @@ if __name__ == "__main__":
     assert (
         args.game_state in available_game_states
     ), f"Incorrect game state '{args.game_state}', choose from {available_game_states}"
-    gs: GameState = getattr(drl_gym.environments, f"{args.game_state}GameState")()
+    game_state_params = {}
+    if args.game_state_params:
+        game_state_params = args.game_state_params
+    gs: GameState = getattr(drl_gym.environments, f"{args.game_state}GameState")(
+        **game_state_params
+    )
 
     # Check agents argument
     agent_params = [dict()] * gs.player_count()

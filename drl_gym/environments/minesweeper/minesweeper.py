@@ -36,10 +36,6 @@ class MinesweeperGameState(GameState):
                 dtype=np.float,
             )
 
-        # Pygame
-        self.screen = None
-        self.font = None
-
         if random_map:
             for n in range(10):
                 self.place_bomb()
@@ -57,7 +53,7 @@ class MinesweeperGameState(GameState):
         if not current_row[c] == Cell.BOMB:
             current_row[c] = Cell.BOMB
         else:
-            self.place_bomb(self.solution_grid)
+            self.place_bomb()
 
     def update_values(self, rn, c):
         if rn - 1 > -1:
