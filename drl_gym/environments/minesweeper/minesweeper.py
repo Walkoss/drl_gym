@@ -22,6 +22,7 @@ class MinesweeperGameState(GameState):
                 [-1, -1, -1, -1, -1, -1, -1, -1, -1],
                 [-1, -1, -1, -1, -1, -1, -1, -1, -1],
                 [-1, -1, -1, -1, -1, -1, -1, -1, -1],
+                [-1, -1, -1, -1, -1, -1, -1, -1, -1],
             ],
             dtype=int,
         )  # -2 = bombe, -1 = vide, 0 à 8 = nombre de bombes qui entourent
@@ -34,8 +35,6 @@ class MinesweeperGameState(GameState):
                 value = self.l(r, c, self.world)
                 if value == -2:
                     self.update_values(r, c, self.world)
-
-        print(self.world)
 
     def place_bomb(self, world):
         r = random.randint(0, 8)
@@ -109,7 +108,7 @@ class MinesweeperGameState(GameState):
         assert player_index == 0
         assert action_index in self.available_actions
 
-        (wanted_i, wanted_j) = (action_index // 5, action_index % 5)
+        (wanted_i, wanted_j) = (action_index // 9, action_index % 9)
 
         potential_cell_type = self.world[wanted_i, wanted_j]
         self.board[wanted_i, wanted_j] = potential_cell_type
