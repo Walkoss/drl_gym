@@ -19,6 +19,7 @@ BLUE = (0, 0, 255)
 BLACK = (0, 0, 0)
 RED = (255, 0, 0)
 YELLOW = (255, 255, 0)
+WHITE = (255, 255, 255)
 DRAWING_DELAY = 500
 
 
@@ -202,14 +203,25 @@ class ConnectFourGameState(GameState):
         if not self.screen and not self.font:
             pygame.init()
             self.screen = pygame.display.set_mode((WIDTH, HEIGHT))
-            self.font = pygame.font.SysFont("monospace", 75)
+            self.font = pygame.font.SysFont("monospace", 50)
+            pygame.display.set_caption("Connect four")
+        self.screen.fill(WHITE)
+
         if self.game_over:
             if self.winner:
-                label = self.font.render(f"{self.winner} wins!", 1, BLACK)
-                self.screen.blit(label, (10, 10))
+                text = self.font.render(f"{self.winner} wins!", True, BLACK)
+                text_x = text.get_rect().width
+                text_y = text.get_rect().height
+                self.screen.blit(
+                    text, (((WIDTH / 2) - (text_x / 2)), (50 - (text_y / 2)))
+                )
             else:
-                label = self.font.render(f"Tie!", 1, BLACK)
-                self.screen.blit(label, (10, 10))
+                text = self.font.render(f"Tie!", True, BLACK)
+                text_x = text.get_rect().width
+                text_y = text.get_rect().height
+                self.screen.blit(
+                    text, (((WIDTH / 2) - (text_x / 2)), (50 - (text_y / 2)))
+                )
         else:
             if self.active_player == Cell.RED:
                 pygame.draw.rect(
@@ -233,7 +245,7 @@ class ConnectFourGameState(GameState):
                 )
                 pygame.draw.circle(
                     self.screen,
-                    BLACK,
+                    WHITE,
                     (
                         int(c * SQUARE_SIZE + SQUARE_SIZE / 2),
                         int(r * SQUARE_SIZE + SQUARE_SIZE + SQUARE_SIZE / 2),
