@@ -11,33 +11,7 @@ class MinesweeperGameState(GameState):
     def __init__(self):
         self.game_over = False
         self.scores = np.array([0], dtype=np.float)
-        self.available_actions = [
-            0,
-            1,
-            2,
-            3,
-            4,
-            5,
-            6,
-            7,
-            8,
-            9,
-            10,
-            11,
-            12,
-            13,
-            14,
-            15,
-            16,
-            17,
-            18,
-            19,
-            20,
-            21,
-            22,
-            23,
-            24,
-        ]
+        self.available_actions = [i for i in range(64)]
         self.board = np.array(
             [
                 [-1, -1, -1, -1, -1, -1, -1, -1],
@@ -166,8 +140,8 @@ class MinesweeperGameState(GameState):
 
     def get_unique_id(self) -> int:
         acc = 0
-        for i in range(25):
-            acc += (5 ** i) * (self.board[i // 5, i % 5] + 1)
+        for i in range(64):
+            acc += (8 ** i) * (self.board[i // 8, i % 8] + 1)
         return acc
 
     def get_max_state_count(self) -> int:
