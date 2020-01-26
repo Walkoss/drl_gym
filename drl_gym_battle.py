@@ -1,6 +1,5 @@
 import argparse
 import ast
-import os
 from typing import List
 
 import drl_gym
@@ -72,7 +71,7 @@ if __name__ == "__main__":
         if agent_params[i]:
             log_filename += f"_{agent_params_to_str(agent_params[i])}"
 
-    f = open(f"logs/{log_filename}.csv", "w",)
+    f = open(f"logs/{log_filename}.csv", "w", newline="")
     writer = get_experiment_csv_writer(f, gs.player_count())
 
     # Run battle
@@ -89,6 +88,6 @@ if __name__ == "__main__":
     finally:
         for i, agent in enumerate(agents):
             agent.save_model(
-                f"{agent.__class__.__name__}_{agent_params_to_str(agent_params[i])}"
+                f"models/{agent.__class__.__name__}{i}_{agent_params_to_str(agent_params[i])}"
             )
         f.close()

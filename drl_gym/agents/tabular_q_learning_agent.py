@@ -60,7 +60,7 @@ class TabQLearningAgent(Agent):
 
     def save_model(self, name):
         with open(
-            f"models/{name}_{datetime.now().strftime('%H:%M:%S')}.pkl", "wb",
+            f"{name}_{datetime.now().strftime('%H:%M:%S')}.pkl", "wb",
         ) as f:
             pickle.dump(self.Q, f)
 
