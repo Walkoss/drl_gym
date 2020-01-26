@@ -127,4 +127,5 @@ class PPOAgent(Agent):
         )
 
     def save_model(self, filename: str):
-        pass
+        self.actor.save_model(filename)
+        self.critic.save_model(filename)

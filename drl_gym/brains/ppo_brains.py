@@ -64,7 +64,7 @@ class PPOPolicyBrain:
             [policy_tensor],
         )
 
-        print(self.model.summary())
+        #print(self.model.summary())
 
         loss = build_ppo_loss(advantages_tensor, old_policy_tensor)
 
@@ -98,6 +98,9 @@ class PPOPolicyBrain:
             verbose=0,
         )
 
+    def save_model(self, filename: str):
+        self.model.save(f"{filename}_actor.h5")
+
 
 class PPOValueBrain:
     def __init__(
@@ -119,6 +122,9 @@ class PPOValueBrain:
 
     def train(self, states: np.ndarray, targets: np.ndarray):
         self.model.train_on_batch(states, targets)
+
+    def save_model(self, filename: str):
+        self.model.save(f"{filename}_critic.h5")
 
 
 if __name__ == "__main__":
