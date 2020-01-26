@@ -32,4 +32,4 @@ class DQNBrain:
         self.model.train_on_batch(np.array((state,)), np.array((target_vec,)))
 
     def save_model(self, filename: str):
-        self.model.save_model(f"{filename}.h5")
+        self.model.save(f"{filename}.h5")

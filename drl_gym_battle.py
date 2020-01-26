@@ -88,6 +88,6 @@ if __name__ == "__main__":
     finally:
         for i, agent in enumerate(agents):
             agent.save_model(
-                f"models/{agent.__class__.__name__}{i}_{agent_params_to_str(agent_params[i])}"
+                f"models/{args.game_state}_{agent.__class__.__name__}{i}_{agent_params_to_str(agent_params[i])}"
             )
         f.close()
