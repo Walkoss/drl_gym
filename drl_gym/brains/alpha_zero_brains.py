@@ -31,4 +31,7 @@ class AlphaQNetwork:
         target_vecs = chosen_action_masks * np.expand_dims(targets, -1) + (
             1 - chosen_action_masks
         ) * self.model.predict(states)
-        self.model.fit(states, target_vecs, epochs=10)
+        self.model.fit(states, target_vecs, epochs=10, verbose=0)
+
+    def save_model(self, filename: str):
+        self.model.save(f"{filename}.h5")

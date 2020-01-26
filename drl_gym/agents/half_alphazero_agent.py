@@ -181,4 +181,4 @@ class HalfAlphaZeroAgent(Agent):
                 self.memory = dict()
 
     def save_model(self, filename: str):
-        pass
+        self.brain.save_model(filename)
