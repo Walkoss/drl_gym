@@ -9,37 +9,77 @@ from drl_gym.contracts import GameState
 
 class MinesweeperGameState(GameState):
     def __init__(self):
-        self.world = np.zeros([5, 5], dtype=int)
-        self.bombs = np.zeros([6, 6], dtype=int)
-        self.solution = np.zeros([6, 6], dtype=int)
-        for r in range(5):
-            for c in range(5):
-                if random.random() < 0.2:
-                    self.bombs[r][c] = -1
-                    self.world[r][c] = -1
-        for r in range(5):
-            for c in range(5):
-                for rr in range(r - 1, r + 2):
-                    for cc in range(c - 1, c + 2):
-                        if self.bombs[rr][cc]:
-                            self.solution[r][c] += 1
-        for r in range(5):
-            for c in range(5):
-                if self.world[r][c] != -1:
-                    self.world[r][c] = self.solution[r][c]
-
-        self.board = np.array([
-            [-2, -2, -2, -2, -2],
-            [-2, -2, -2, -2, -2],
-            [-2, -2, -2, -2, -2],
-            [-2, -2, -2, -2, -2],
-            [-2, -2, -2, -2, -2],
-        ])  # -2 = vide, -1 = bombe, 0 à 8 = nombre de bombes qui entourent
-        self.nbr_bombs = np.sum(self.world == -1)
         self.game_over = False
         self.scores = np.array([0], dtype=np.float)
         self.available_actions = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23,
                                   24]
+        self.board = np.array([
+            [-1, -1, -1, -1, -1, -1, -1, -1],
+            [-1, -1, -1, -1, -1, -1, -1, -1],
+            [-1, -1, -1, -1, -1, -1, -1, -1],
+            [-1, -1, -1, -1, -1, -1, -1, -1],
+            [-1, -1, -1, -1, -1, -1, -1, -1],
+            [-1, -1, -1, -1, -1, -1, -1, -1],
+            [-1, -1, -1, -1, -1, -1, -1, -1],
+            [-1, -1, -1, -1, -1, -1, -1, -1],
+        ], dtype=np.float)  # -2 = bombe, -1 = vide, 0 à 8 = nombre de bombes qui entourent
+        self.world = np.zeros([8, 8], dtype=np.float)
+        for n in range(10):
+            self.place_bomb(self.world)
+
+        for r in range(8):
+            for c in range(8):
+                value = self.l(r, c, self.world)
+                if value == -2:
+                    self.update_values(r, c, self.world)
+
+    def place_bomb(self, world):
+        r = random.randint(0, 7)
+        c = random.randint(0, 7)
+        current_row = world[r]
+        if not current_row[c] == -2:
+            current_row[c] = -2
+        else:
+            self.place_bomb(world)
+
+    def update_values(self, rn, c, world):
+        # Row above.
+        if rn - 1 > -1:
+            r = world[rn - 1]
+            if c - 1 > -1:
+                if not r[c - 1] == -2:
+                    r[c - 1] += 1
+            if not r[c] == -2:
+                r[c] += 1
+            if 8 > c + 1:
+                if not r[c + 1] == -2:
+                    r[c + 1] += 1
+
+        # Same row.
+        r = world[rn]
+        if c - 1 > -1:
+            if not r[c - 1] == -2:
+                r[c - 1] += 1
+        if 8 > c + 1:
+            if not r[c + 1] == -2:
+                r[c + 1] += 1
+
+        # Row below.
+        if 8 > rn + 1:
+            r = world[rn + 1]
+            if c - 1 > -1:
+                if not r[c - 1] == -2:
+                    r[c - 1] += 1
+            if not r[c] == -2:
+                r[c] += 1
+            if 8 > c + 1:
+                if not r[c + 1] == -2:
+                    r[c + 1] += 1
+
+    def l(self, r, c, world):
+        row = world[r]
+        c = row[c]
+        return c
 
     def player_count(self) -> int:
         return 1
@@ -55,7 +95,6 @@ class MinesweeperGameState(GameState):
         gs_copy.game_over = self.game_over
         gs_copy.scores = self.scores.copy()
         gs_copy.available_actions = self.available_actions.copy()
-        gs_copy.nbr_bombs = self.nbr_bombs.copy()
         gs_copy.world = self.world.copy()
         gs_copy.board = self.board.copy()
 
@@ -73,12 +112,10 @@ class MinesweeperGameState(GameState):
 
         self.available_actions.remove(action_index)
 
-        if potential_cell_type == -1:
-            # self.board[wanted_i, wanted_j] = '*'
+        if potential_cell_type == -2:
             self.game_over = True
-        elif np.sum(self.board == -2) == self.nbr_bombs:  # Fin de jeu -> victoire
+        elif np.sum(self.board == -1) == 10:  # Victoire -> fin de jeu
             self.game_over = True
-            self.scores[player_index] = 25
         else:
             self.scores[player_index] += 1
 
@@ -106,7 +143,7 @@ class MinesweeperGameState(GameState):
         return acc
 
     def get_max_state_count(self) -> int:
-        return 8 ** 25
+        return 11 ** (8 * 8)  # Nbr état possible d'une case ** (nbr row * nbr columns)
 
     def get_action_space_size(self) -> int:
         return len(self.available_actions)
@@ -116,7 +153,6 @@ class MinesweeperGameState(GameState):
         for i in range(5):
             for j in range(5):
                 state_vec[i * 5 * 5 + j * 8 + (self.board[i, j] + 1)] = 1
-        print("TEST" + state_vec)
         return state_vec"""
         pass
 
