@@ -10,34 +10,36 @@ from drl_gym.contracts import GameState
 class MinesweeperGameState(GameState):
     def __init__(self):
         self.game_over = False
-        self.scores = np.array([0], dtype=np.float)
-        self.available_actions = [i for i in range(64)]
+        self.scores = np.array([0], dtype=int)
+        self.available_actions = [i for i in range(81)]
         self.board = np.array(
             [
-                [-1, -1, -1, -1, -1, -1, -1, -1],
-                [-1, -1, -1, -1, -1, -1, -1, -1],
-                [-1, -1, -1, -1, -1, -1, -1, -1],
-                [-1, -1, -1, -1, -1, -1, -1, -1],
-                [-1, -1, -1, -1, -1, -1, -1, -1],
-                [-1, -1, -1, -1, -1, -1, -1, -1],
-                [-1, -1, -1, -1, -1, -1, -1, -1],
-                [-1, -1, -1, -1, -1, -1, -1, -1],
+                [-1, -1, -1, -1, -1, -1, -1, -1, -1],
+                [-1, -1, -1, -1, -1, -1, -1, -1, -1],
+                [-1, -1, -1, -1, -1, -1, -1, -1, -1],
+                [-1, -1, -1, -1, -1, -1, -1, -1, -1],
+                [-1, -1, -1, -1, -1, -1, -1, -1, -1],
+                [-1, -1, -1, -1, -1, -1, -1, -1, -1],
+                [-1, -1, -1, -1, -1, -1, -1, -1, -1],
+                [-1, -1, -1, -1, -1, -1, -1, -1, -1],
             ],
-            dtype=np.float,
+            dtype=int,
         )  # -2 = bombe, -1 = vide, 0 à 8 = nombre de bombes qui entourent
-        self.world = np.zeros([8, 8], dtype=np.float)
+        self.world = np.zeros([9, 9], dtype=np.float)
         for n in range(10):
             self.place_bomb(self.world)
 
-        for r in range(8):
-            for c in range(8):
+        for r in range(9):
+            for c in range(9):
                 value = self.l(r, c, self.world)
                 if value == -2:
                     self.update_values(r, c, self.world)
 
+        print(self.world)
+
     def place_bomb(self, world):
-        r = random.randint(0, 7)
-        c = random.randint(0, 7)
+        r = random.randint(0, 8)
+        c = random.randint(0, 8)
         current_row = world[r]
         if not current_row[c] == -2:
             current_row[c] = -2
@@ -53,7 +55,7 @@ class MinesweeperGameState(GameState):
                     r[c - 1] += 1
             if not r[c] == -2:
                 r[c] += 1
-            if 8 > c + 1:
+            if 9 > c + 1:
                 if not r[c + 1] == -2:
                     r[c + 1] += 1
 
@@ -62,19 +64,19 @@ class MinesweeperGameState(GameState):
         if c - 1 > -1:
             if not r[c - 1] == -2:
                 r[c - 1] += 1
-        if 8 > c + 1:
+        if 9 > c + 1:
             if not r[c + 1] == -2:
                 r[c + 1] += 1
 
         # Row below.
-        if 8 > rn + 1:
+        if 9 > rn + 1:
             r = world[rn + 1]
             if c - 1 > -1:
                 if not r[c - 1] == -2:
                     r[c - 1] += 1
             if not r[c] == -2:
                 r[c] += 1
-            if 8 > c + 1:
+            if 9 > c + 1:
                 if not r[c + 1] == -2:
                     r[c + 1] += 1
 
@@ -116,10 +118,19 @@ class MinesweeperGameState(GameState):
 
         if potential_cell_type == -2:
             self.game_over = True
+        elif potential_cell_type == 0:
+            self.reveal(wanted_i, wanted_j)
         elif np.sum(self.board == -1) == 10:  # Victoire -> fin de jeu
             self.game_over = True
         else:
             self.scores[player_index] += 1
+
+    def reveal(self, wanted_i, wanted_j):
+        if self.check_neighbors(wanted_i, wanted_j):
+            self.board[wanted_i][wanted_j] = self.world[wanted_i][wanted_j]
+
+    def check_neighbors(self, wanted_i, wanted_j):
+        return self.world[wanted_i][wanted_j] == 0
 
     def get_scores(self) -> np.ndarray:
         return self.scores
@@ -140,12 +151,12 @@ class MinesweeperGameState(GameState):
 
     def get_unique_id(self) -> int:
         acc = 0
-        for i in range(64):
-            acc += (8 ** i) * (self.board[i // 8, i % 8] + 1)
+        for i in range(81):
+            acc += (9 ** i) * (self.board[i // 9, i % 9] + 1)
         return acc
 
     def get_max_state_count(self) -> int:
-        return 11 ** (8 * 8)  # Nbr état possible d'une case ** (nbr row * nbr columns)
+        return 11 ** (9 * 9)  # Nbr état possible d'une case ** (nbr row * nbr columns)
 
     def get_action_space_size(self) -> int:
         return len(self.available_actions)
