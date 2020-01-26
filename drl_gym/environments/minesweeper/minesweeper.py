@@ -136,6 +136,7 @@ class MinesweeperGameState(GameState):
                 self.board[neighbor_r, neighbor_c] = 0
                 self.available_actions.remove(neighbor_r * 9 + neighbor_c)
                 self.reveal(neighbor_r, neighbor_c)
+                self.scores[0] += 1
 
     def get_neighbors(self, wanted_i, wanted_j):
         neighbors = []
