@@ -1,15 +1,15 @@
 import os
 import random
 import hashlib
-from typing import List
+from typing import List, Optional
 import numpy as np
 import pygame
 
 from drl_gym.contracts import GameState
 
 
-WIDTH = 500
-HEIGHT = 600
+WIDTH = 900
+HEIGHT = 1000
 DRAWING_DELAY = 500
 
 WHITE = (255, 255, 255)
@@ -206,8 +206,8 @@ class MinesweeperGameState(GameState):
             pygame.display.set_caption("Minesweeper")
         self.screen.fill(WHITE)
 
-        pygame.draw.rect(self.screen, GREY, (0, 0, 500, 100))
-        pygame.draw.line(self.screen, BLACK, (0, 100), (500, 100), 4)
+        pygame.draw.rect(self.screen, GREY, (0, 0, WIDTH, 100))
+        pygame.draw.line(self.screen, BLACK, (0, 100), (WIDTH, 100), 4)
 
         if not self.game_over:
             text = self.font.render(
@@ -276,7 +276,12 @@ class MinesweeperGameState(GameState):
                         WIDTH / 9,
                         (HEIGHT - 100) / 9,
                     ),
-                    2,
+                    1,
                 )
         pygame.display.update()
         pygame.time.delay(DRAWING_DELAY)
+
+    def get_valid_action_from_mouse_pos(
+        self, mouse_x: int, mouse_y: int
+    ) -> Optional[int]:
+        return ((mouse_y - 100) // 100) * 9 + (mouse_x // 100)
