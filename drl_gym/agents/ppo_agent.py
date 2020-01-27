@@ -1,3 +1,5 @@
+import numpy as np
+
 from tensorflow.python.keras.metrics import *
 from tensorflow.python.keras.utils import *
 
@@ -56,7 +58,8 @@ class PPOAgent(Agent):
 
         v = self.critic.predict(state_vec)
         p = self.actor.predict(state_vec, mask_vec)
-
+        p = np.array(p)
+        p /= p.sum()
         indexes = np.arange(self.action_space_size)
         chosen_action = np.random.choice(indexes, p=p)
 
