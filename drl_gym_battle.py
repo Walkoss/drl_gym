@@ -91,7 +91,7 @@ if __name__ == "__main__":
         if agent_params[i]:
             log_filename += f"_{agent_params_to_str(agent_params[i])}"
 
-    f = open(f"logs/{log_filename}-{datetime.now().strftime('%H-%M-%S')}.csv", "w",)
+    f = open(f"logs/{log_filename}-{datetime.now().strftime('%H-%M-%S')}.csv", "w", newline="")
     writer = get_experiment_csv_writer(f, gs.player_count())
 
     # Run battle
