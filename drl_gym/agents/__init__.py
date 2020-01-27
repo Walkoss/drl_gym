@@ -8,6 +8,7 @@ from .ppo_agent import PPOAgent
 from .MO_MCTS_agent import MOMCTSAgent
 from .half_alphazero_agent import HalfAlphaZeroAgent
 from .MO_MCTS_expert_FNN_apprentice_agent import ExpertApprenticeAgent
+from .mouse_agent import MouseAgent
 
 available_agents = [
     "Random",
@@ -20,4 +21,5 @@ available_agents = [
     "MOMCTS",
     "HalfAlphaZero",
     "ExpertApprentice",
+    "Mouse",
 ]

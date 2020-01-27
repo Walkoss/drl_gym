@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 
 import numpy as np
 
@@ -41,6 +41,11 @@ class GameState:
         raise NotImplementedError
 
     def render(self):
+        raise NotImplementedError
+
+    def get_valid_action_from_mouse_pos(
+        self, mouse_x: int, mouse_y: int
+    ) -> Optional[int]:
         raise NotImplementedError
 
 

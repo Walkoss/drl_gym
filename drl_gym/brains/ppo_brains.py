@@ -64,7 +64,7 @@ class PPOPolicyBrain:
             [policy_tensor],
         )
 
-        #print(self.model.summary())
+        # print(self.model.summary())
 
         loss = build_ppo_loss(advantages_tensor, old_policy_tensor)
 

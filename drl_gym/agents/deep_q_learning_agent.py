@@ -18,7 +18,7 @@ class DeepQLearningAgent(Agent):
         epsilon: float = 0.1,
         hidden_layers_count: int = 5,
         neurons_per_hidden_layer: int = 128,
-        activation: str = 'tanh',
+        activation: str = "tanh",
         using_convolution: bool = False,
     ):
         self.Q = DQNBrain(
@@ -40,7 +40,9 @@ class DeepQLearningAgent(Agent):
     def act(self, gs: GameState) -> int:
         available_actions = gs.get_available_actions(gs.get_active_player())
 
-        state_vec = gs.get_vectorized_state(mode="2D" if self.using_convolution else None)
+        state_vec = gs.get_vectorized_state(
+            mode="2D" if self.using_convolution else None
+        )
         predicted_Q_values = self.Q.predict(state_vec)
 
         if np.random.random() <= self.epsilon:

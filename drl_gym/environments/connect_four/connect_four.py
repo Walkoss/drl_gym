@@ -1,7 +1,7 @@
 import hashlib
 import os
 
-from typing import List
+from typing import List, Optional
 
 import numpy as np
 import pygame
@@ -277,3 +277,10 @@ class ConnectFourGameState(GameState):
                     )
         pygame.display.update()
         pygame.time.delay(DRAWING_DELAY)
+
+    def get_valid_action_from_mouse_pos(
+        self, mouse_x: int, mouse_y: int
+    ) -> Optional[int]:
+        if mouse_x < 100:
+            return 0
+        return int(mouse_x / 100)
