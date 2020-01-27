@@ -139,11 +139,11 @@ class MinesweeperGameState(GameState):
         elif potential_cell_type == 0:
             self.scores[player_index] += 1
             self.reveal(wanted_i, wanted_j)
-        elif np.sum(self.board == Cell.EMPTY) == 10:  # Victoire -> fin de jeu
-            self.has_win = True
-            self.game_over = True
         else:
             self.scores[player_index] += 1
+        if np.sum(self.board == Cell.EMPTY) == 10:  # Victoire -> fin de jeu
+            self.has_win = True
+            self.game_over = True
 
     def reveal(self, wanted_i, wanted_j):
         neighbors = self.get_neighbors(wanted_i, wanted_j)
