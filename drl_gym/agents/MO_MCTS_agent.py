@@ -1,7 +1,6 @@
 import pickle
 from math import sqrt, log
 from random import choice
-from datetime import datetime
 
 from drl_gym.contracts import Agent, GameState
 
@@ -98,7 +97,7 @@ class MOMCTSAgent(Agent):
         pass
 
     def save_model(self, filename: str):
-        with open(f"{filename}_{datetime.now().strftime('%H-%M-%S')}.pkl", "wb",) as f:
+        with open(f"{filename}.pkl", "wb",) as f:
             pickle.dump(self.memory, f)
 
     def load_model(self, filename: str):

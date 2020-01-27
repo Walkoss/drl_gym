@@ -5,6 +5,7 @@ import os
 os.environ["PYGAME_HIDE_SUPPORT_PROMPT"] = "hide"
 
 from typing import List
+from datetime import datetime
 
 import drl_gym
 
@@ -90,7 +91,7 @@ if __name__ == "__main__":
         if agent_params[i]:
             log_filename += f"_{agent_params_to_str(agent_params[i])}"
 
-    f = open(f"logs/{log_filename}.csv", "w", newline="")
+    f = open(f"logs/{log_filename}-{datetime.now().strftime('%H-%M-%S')}.csv", "w",)
     writer = get_experiment_csv_writer(f, gs.player_count())
 
     # Run battle
@@ -107,6 +108,6 @@ if __name__ == "__main__":
     finally:
         for i, agent in enumerate(agents):
             agent.save_model(
-                f"models/{args.game_state}_{agent.__class__.__name__}{i}_{agent_params_to_str(agent_params[i])}"
+                f"models/{args.game_state}_{agent.__class__.__name__}{i}_{agent_params_to_str(agent_params[i])}_{datetime.now().strftime('%H-%M-%S')}"
             )
         f.close()

@@ -1,8 +1,6 @@
 import pickle
 import numpy as np
 
-from datetime import datetime
-
 from drl_gym.contracts import Agent, GameState
 
 
@@ -59,7 +57,7 @@ class TabQLearningAgent(Agent):
             self.r = None
 
     def save_model(self, filename: str):
-        with open(f"{filename}_{datetime.now().strftime('%H-%M-%S')}.pkl", "wb",) as f:
+        with open(f"{filename}.pkl", "wb",) as f:
             pickle.dump(self.Q, f)
 
     def load_model(self, filename: str):
