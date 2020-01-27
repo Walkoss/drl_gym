@@ -136,7 +136,9 @@ class ExpertApprenticeAgent(Agent):
 
         if len(self.states_buffer) > 200:
             self.apprentice_training_count += 1
-            self.brain.fit(np.array(self.states_buffer), np.array(self.actions_buffer))
+            self.brain.fit(
+                np.array(self.states_buffer), np.array(self.actions_buffer), verbose=0
+            )
             self.states_buffer.clear()
             self.actions_buffer.clear()
 
@@ -149,4 +151,4 @@ class ExpertApprenticeAgent(Agent):
         pass
 
     def save_model(self, filename: str):
-        pass
+        self.brain.save(f"{filename}.h5")
