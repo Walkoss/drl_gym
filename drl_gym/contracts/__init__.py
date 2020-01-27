@@ -58,3 +58,6 @@ class Agent:
 
     def save_model(self, filename: str):
         raise NotImplementedError
+
+    def load_model(self, filename: str):
+        raise NotImplementedError

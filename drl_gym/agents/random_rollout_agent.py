@@ -42,3 +42,6 @@ class RandomRolloutAgent(Agent):
 
     def save_model(self, filename: str):
         pass
+
+    def load_model(self, filename: str):
+        pass

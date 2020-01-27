@@ -62,6 +62,6 @@ class TabQLearningAgent(Agent):
         with open(f"{filename}_{datetime.now().strftime('%H-%M-%S')}.pkl", "wb",) as f:
             pickle.dump(self.Q, f)
 
-    def load_model(self, filepath: str):
-        with open(filepath, "rb") as f:
+    def load_model(self, filename: str):
+        with open(filename, "rb") as f:
             self.Q = pickle.load(f)

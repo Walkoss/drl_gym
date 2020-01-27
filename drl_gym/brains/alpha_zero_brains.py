@@ -1,9 +1,11 @@
+import numpy as np
+
 from tensorflow.keras import Sequential
 from tensorflow.keras.activations import linear, tanh
 from tensorflow.keras.layers import Dense
 from tensorflow.keras.losses import mse
 from tensorflow.keras.optimizers import SGD, Adam
-import numpy as np
+from tensorflow.python.keras.models import load_model
 
 
 class AlphaQNetwork:
@@ -35,3 +37,6 @@ class AlphaQNetwork:
 
     def save_model(self, filename: str):
         self.model.save(f"{filename}.h5")
+
+    def load_model(self, filename: str):
+        self.model = load_model(filename)

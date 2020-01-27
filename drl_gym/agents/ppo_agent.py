@@ -132,3 +132,7 @@ class PPOAgent(Agent):
     def save_model(self, filename: str):
         self.actor.save_model(filename)
         self.critic.save_model(filename)
+
+    def load_model(self, filename: str):
+        self.actor.load_model(filename)
+        self.critic.load_model(filename)

@@ -7,6 +7,7 @@ from tensorflow.keras.activations import relu, softmax
 from tensorflow.keras.layers import Dense
 from tensorflow.keras.losses import mse
 from tensorflow.keras.optimizers import Adam
+from tensorflow.python.keras.models import load_model
 
 from drl_gym.contracts import Agent, GameState
 
@@ -152,3 +153,6 @@ class ExpertApprenticeAgent(Agent):
 
     def save_model(self, filename: str):
         self.brain.save(f"{filename}.h5")
+
+    def load_model(self, filename: str):
+        self.brain = load_model(filename)

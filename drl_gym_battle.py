@@ -39,6 +39,7 @@ def parse_args():
         "-r", "--render", nargs="?", const=True, default=False,
     )
     parser.add_argument("--game-state-params", type=ast.literal_eval)
+    parser.add_argument("--load-models", type=ast.literal_eval, action="append")
     return parser.parse_args()
 
 
@@ -77,6 +78,10 @@ if __name__ == "__main__":
             agent in available_agents
         ), f"Incorrect agent '{agent}', choose from {available_agents}"
         agents.append(getattr(drl_gym.agents, f"{agent}Agent")(**agent_params[i]))
+
+    if args.load_models:
+        for i, param in args.load_models:
+            agents[i].load_model(param)
 
     # Create log file
     log_filename = f"{args.game_state}"

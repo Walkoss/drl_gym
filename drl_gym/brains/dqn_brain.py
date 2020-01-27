@@ -1,9 +1,11 @@
+import numpy as np
+
 from tensorflow.python.keras import Sequential
 from tensorflow.python.keras.activations import linear, tanh
 from tensorflow.python.keras.layers import Dense, Conv2D, Flatten
 from tensorflow.python.keras.losses import mse
 from tensorflow.python.keras.optimizers import SGD, Adam
-import numpy as np
+from tensorflow.python.keras.models import load_model
 
 
 class DQNBrain:
@@ -41,3 +43,6 @@ class DQNBrain:
 
     def save_model(self, filename: str):
         self.model.save(f"{filename}.h5")
+
+    def load_model(self, filename: str):
+        self.model = load_model(filename)

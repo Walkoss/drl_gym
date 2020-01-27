@@ -100,3 +100,7 @@ class MOMCTSAgent(Agent):
     def save_model(self, filename: str):
         with open(f"{filename}_{datetime.now().strftime('%H-%M-%S')}.pkl", "wb",) as f:
             pickle.dump(self.memory, f)
+
+    def load_model(self, filename: str):
+        with open(filename, "rb") as f:
+            self.memory = pickle.load(f)

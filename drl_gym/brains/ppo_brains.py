@@ -6,6 +6,7 @@ from tensorflow.python.keras.layers import Dense, Input, Lambda
 from tensorflow.python.keras.losses import mse
 from tensorflow.python.keras.models import Model
 from tensorflow.python.keras.optimizers import Adam
+from tensorflow.python.keras.models import load_model
 
 
 def softmax_with_mask(tensor_and_mask):
@@ -101,6 +102,9 @@ class PPOPolicyBrain:
     def save_model(self, filename: str):
         self.model.save(f"{filename}_actor.h5")
 
+    def load_model(self, filename: str):
+        self.model = load_model(filename)
+
 
 class PPOValueBrain:
     def __init__(
@@ -125,6 +129,9 @@ class PPOValueBrain:
 
     def save_model(self, filename: str):
         self.model.save(f"{filename}_critic.h5")
+
+    def load_model(self, filename: str):
+        self.model = load_model(filename)
 
 
 if __name__ == "__main__":

@@ -1,5 +1,6 @@
 from tensorflow.python.keras.metrics import *
 from tensorflow.python.keras.utils import *
+from tensorflow.python.keras.models import load_model
 
 from drl_gym.brains import DQNBrain
 from drl_gym.contracts import Agent, GameState
@@ -77,3 +78,6 @@ class DeepQLearningAgent(Agent):
 
     def save_model(self, filename: str):
         self.Q.save_model(filename)
+
+    def load_model(self, filename: str):
+        self.Q.load_model(filename)

@@ -182,3 +182,6 @@ class HalfAlphaZeroAgent(Agent):
 
     def save_model(self, filename: str):
         self.brain.save_model(filename)
+
+    def load_model(self, filename: str):
+        self.brain.load_model(filename)
