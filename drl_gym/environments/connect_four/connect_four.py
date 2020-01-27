@@ -162,7 +162,7 @@ class ConnectFourGameState(GameState):
                         return True
                 elif old_cell != current_cell:
                     old_cell = current_cell
-                    consecutive_count = 0
+                    consecutive_count = 1
             else:
                 consecutive_count = 0
                 old_cell = None
