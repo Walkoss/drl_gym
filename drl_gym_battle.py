@@ -1,7 +1,9 @@
 import argparse
 import ast
 import os
+import uuid
 
+os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
 os.environ["PYGAME_HIDE_SUPPORT_PROMPT"] = "hide"
 
 from typing import List
@@ -84,8 +86,8 @@ if __name__ == "__main__":
         log_filename += f"_{agent}"
         if agent_params[i]:
             log_filename += f"_{agent_params_to_str(agent_params[i])}"
-
-    f = open(f"logs/{log_filename}.csv", "w", newline="")
+    id = uuid.uuid1()
+    f = open(f"logs/{log_filename}_{id}.csv", "w", newline="")
     writer = get_experiment_csv_writer(f, gs.player_count())
 
     # Run battle
