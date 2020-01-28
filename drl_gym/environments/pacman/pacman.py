@@ -21,7 +21,11 @@ GHOST_SPAWN_DIRECTION = 4
 GHOST_COUNT = 4
 GHOST_POINT = 200
 PAC_DOTS_POINT = 10
+PAC_DOTS_COUNT = 240
 ENERGIZER_POINT = 50
+ENERGIZER_COUNT = 4
+MAX_SCORE = PAC_DOTS_POINT * PAC_DOTS_COUNT + ENERGIZER_POINT * ENERGIZER_COUNT
+WIN_BONUS_POINT = 1000
 
 # Pygame
 WHITE = (255, 255, 255)
@@ -102,7 +106,7 @@ class PacManGameState(GameState):
         # RIGHT = 3
         # NOOP = 4
         self.available_actions = [0, 1, 2, 3, 4]
-        self.remaining_actions = 2000
+        self.remaining_actions = 5000
         self.action_vector = {
             0: np.array([-SPEED, 0]),
             1: np.array([SPEED, 0]),
@@ -217,7 +221,9 @@ class PacManGameState(GameState):
             elif ghost_target_type == 5:
                 self.respawn()
 
-        if self.remaining_actions == 0 or self.heart == 0:
+        if self.remaining_actions == 0 or self.heart == 0 or self.score >= MAX_SCORE:
+            if self.score >= MAX_SCORE:
+                self.score += WIN_BONUS_POINT
             self.game_over = True
 
     def respawn(self):
@@ -265,7 +271,8 @@ class PacManGameState(GameState):
 
         p_approximate_pos = np.floor(self.pacman_pos).astype(int)
         for g_pos in self.ghost_pos:
-            if p_approximate_pos[0] == g_pos[0] and p_approximate_pos[1] == g_pos[1]:
+            g_approximate_pos = np.floor(g_pos).astype(int)
+            if p_approximate_pos[0] == g_approximate_pos[0] and p_approximate_pos[1] == g_approximate_pos[1]:
                 # Ghost collision
                 return 6 if player_type == 5 else 5
 
