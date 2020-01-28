@@ -1,7 +1,9 @@
 import argparse
 import ast
 import os
+import uuid
 
+os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
 os.environ["PYGAME_HIDE_SUPPORT_PROMPT"] = "hide"
 
 from typing import List

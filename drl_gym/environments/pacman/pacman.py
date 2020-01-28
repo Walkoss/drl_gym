@@ -1,12 +1,13 @@
 import hashlib
 import os
 import numpy as np
+import pygame
 
 from typing import List
 from drl_gym.contracts import GameState
 
 # Movement per frame
-SPEED = 0.2
+SPEED = 0.4
 
 # Size in pixel
 SPRITE_SIZE = 0.5
@@ -22,9 +23,28 @@ GHOST_POINT = 200
 PAC_DOTS_POINT = 10
 ENERGIZER_POINT = 50
 
+# Pygame
+WHITE = (255, 255, 255)
+BLACK = (0, 0, 0)
+BLUE = (25, 25, 166)
+RED = (255, 0, 0)
+YELLOW = (255, 255, 0)
+TUMBLEWEED = (222, 161, 133)
+PINK = (255, 184, 255)
+AQUA = (0, 255, 255)
+ORANGE = (255, 184, 82)
+GHOST_COLOR = [RED, AQUA, ORANGE, PINK]
+SQUARE_SIZE = 16
+WIDTH = 28 * SQUARE_SIZE
+HEIGHT = (31 * SQUARE_SIZE) + SQUARE_SIZE * 3
+
 
 class PacManGameState(GameState):
     def __init__(self):
+        # Pyagme
+        self.screen = None
+        self.font = None
+
         # 0 = Empty
         # 1 = Wall
         # 2 = Pac-Dots
@@ -82,7 +102,7 @@ class PacManGameState(GameState):
         # RIGHT = 3
         # NOOP = 4
         self.available_actions = [0, 1, 2, 3, 4]
-        self.remaining_actions = 50000
+        self.remaining_actions = 2000
         self.action_vector = {
             0: np.array([-SPEED, 0]),
             1: np.array([SPEED, 0]),
@@ -138,16 +158,12 @@ class PacManGameState(GameState):
         # Maze player position
         else:
             approximate_player_pos = np.floor(self.pacman_pos).astype(int)
-            # approximate_target_pos = np.floor(target_pos).astype(int)
             # Pacman reach a empty cell
             if target_type == 0:
                 self.pacman_pos = target_pos
                 self.pacman_direction = (
                     action_index if action_index != 4 else self.pacman_direction
                 )
-                # self.maze[approximate_player_pos[0]][approximate_player_pos[1]] = 0
-                # Do not alter the maze with the pacman position
-                # self.maze[approximate_target_pos[0]][approximate_target_pos[1]] = 5
             elif target_type == 1 or target_type == 4:
                 pass
             # Pac-Dots
@@ -158,8 +174,6 @@ class PacManGameState(GameState):
                 )
                 if self.maze[approximate_player_pos[0]][approximate_player_pos[1]] == 2:
                     self.maze[approximate_player_pos[0]][approximate_player_pos[1]] = 0
-                # Do not alter the maze with the pacman position
-                # self.maze[approximate_target_pos[0]][approximate_target_pos[1]] = 5
                 self.score += PAC_DOTS_POINT
             # Energizer
             elif target_type == 3:
@@ -169,8 +183,6 @@ class PacManGameState(GameState):
                 )
                 if self.maze[approximate_player_pos[0]][approximate_player_pos[1]] == 3:
                     self.maze[approximate_player_pos[0]][approximate_player_pos[1]] = 0
-                # Do not alter the maze with the pacman position
-                # self.maze[approximate_target_pos[0]][approximate_target_pos[1]] = 5
                 self.score += ENERGIZER_POINT
             elif target_type == 6:
                 # ghost collision
@@ -189,10 +201,10 @@ class PacManGameState(GameState):
 
             # Pacman reach a empty cell
             if (
-                ghost_target_type == 0
-                or ghost_target_type == 2
-                or ghost_target_type == 3
-                or ghost_target_type == 6
+                    ghost_target_type == 0
+                    or ghost_target_type == 2
+                    or ghost_target_type == 3
+                    or ghost_target_type == 6
             ):
                 self.ghost_pos[i] = ghost_target_pos
                 self.ghost_direction[i] = (
@@ -214,7 +226,7 @@ class PacManGameState(GameState):
         self.pacman_direction = PACMAN_SPAWN_DIRECTION
 
     def direction_to_target_position(
-        self, action_index: int, player_pos: np.ndarray, player_direction: int
+            self, action_index: int, player_pos: np.ndarray, player_direction: int
     ) -> np.ndarray:
         if action_index == 4:
             action_index = player_direction
@@ -224,11 +236,11 @@ class PacManGameState(GameState):
     # target_type if center and sprite_pos in cell
     # pacman_type else
     def evaluate_target_type(
-        self,
-        target_pos: np.ndarray,
-        action_index: int,
-        player_direction: int,
-        player_type: int,
+            self,
+            target_pos: np.ndarray,
+            action_index: int,
+            player_direction: int,
+            player_type: int,
     ) -> int:
         sprite_vector = np.array([0.0, 0.0])
         # Case Noop action: keep the same direction
@@ -244,10 +256,10 @@ class PacManGameState(GameState):
         elif action_index == 3:
             sprite_vector = [0, SPRITE_SIZE]
 
-        center_target_pos = np.around(target_pos, 4)
+        center_target_pos = target_pos
         center_target_pos_up = np.ceil(center_target_pos)
         center_target_pos_down = np.floor(center_target_pos)
-        sprite_target_pos = np.around(np.add(target_pos, sprite_vector), 4)
+        sprite_target_pos = np.add(target_pos, sprite_vector)
         sprite_target_pos_up = np.ceil(sprite_target_pos)
         sprite_target_pos_down = np.floor(sprite_target_pos)
 
@@ -259,10 +271,13 @@ class PacManGameState(GameState):
 
         # Pacman reach a new cell
         if np.array_equal(
-            center_target_pos_up, sprite_target_pos_up
+                center_target_pos_up, sprite_target_pos_up
         ) and np.array_equal(center_target_pos_down, sprite_target_pos_down):
             approximate_pos = np.floor(center_target_pos).astype(int)
-            return self.maze[approximate_pos[0]][approximate_pos[1]]
+            if self.maze[approximate_pos[0]][approximate_pos[1]] != 1:
+                return self.maze[approximate_pos[0]][approximate_pos[1]]
+            else:
+                return 1
 
         # Player position in the maze didn't change
         return player_type
@@ -289,7 +304,7 @@ class PacManGameState(GameState):
                 g = False
                 p = False
                 p_approximate_pos = np.floor(self.pacman_pos).astype(int)
-                if i == p_approximate_pos[0] and j == p_approximate_pos[1]:
+                if i == p_approximate_pos[0] and j == p_approximate_pos[1] and cell_type != 1:
                     str_acc += "ᗧ"
                     p = True
                 if not p:
@@ -297,9 +312,10 @@ class PacManGameState(GameState):
                         g_approximate_pos = np.floor(ghost).astype(int)
                         # Display one ghost on the same cell
                         if (
-                            i == g_approximate_pos[0]
-                            and j == g_approximate_pos[1]
-                            and not g
+                                i == g_approximate_pos[0]
+                                and j == g_approximate_pos[1]
+                                and cell_type != 1
+                                and not g
                         ):
                             str_acc += "ᗣ"
                             g = True
@@ -333,4 +349,105 @@ class PacManGameState(GameState):
         return np.insert(self.ghost_pos, 0, self.pacman_pos)
 
     def render(self):
-        print(self)
+        if not self.screen and not self.font:
+            pygame.init()
+            self.screen = pygame.display.set_mode((WIDTH, HEIGHT))
+            self.font = pygame.font.SysFont("Times New Roman", 20)
+            pygame.display.set_caption("Pac-Man")
+        self.screen.fill(BLACK)
+        if not self.game_over:
+            score_text = self.font.render(f"{self.score[0]}", True, WHITE)
+            score_text_y = score_text.get_rect().height
+            self.screen.blit(
+                score_text, (4, (HEIGHT - score_text_y))
+            )
+
+            heart_text = self.font.render(f"♥{self.heart}", True, WHITE)
+            heart_text_x = heart_text.get_rect().width
+            heart_text_y = score_text.get_rect().height
+            self.screen.blit(
+                heart_text, ((WIDTH - (heart_text_x + 6)), (HEIGHT - heart_text_y))
+            )
+
+            arrow = "↑" if self.pacman_direction == 0 else \
+                    "↓" if self.pacman_direction == 1 else \
+                    "←" if self.pacman_direction == 2 else \
+                    "→" if self.pacman_direction == 3 else \
+                    "↮"
+            action_text = self.font.render(f"{arrow}", True, WHITE)
+            action_text_x = action_text.get_rect().width
+            action_text_y = action_text.get_rect().height
+            self.screen.blit(
+                action_text, (((WIDTH/2) - (action_text_x / 2)), (HEIGHT - action_text_y))
+            )
+
+            for i, line in enumerate(self.maze):
+                for j, cell_type in enumerate(line):
+                    if cell_type == 1:
+                        pygame.draw.rect(
+                            self.screen,
+                            BLUE,
+                            (
+                                j * SQUARE_SIZE,
+                                i * SQUARE_SIZE + SQUARE_SIZE,
+                                SQUARE_SIZE,
+                                SQUARE_SIZE,
+                            ),
+                        )
+                    elif cell_type == 2:
+                        pygame.draw.circle(
+                            self.screen,
+                            TUMBLEWEED,
+                            (
+                                int(j * SQUARE_SIZE + SQUARE_SIZE / 2),
+                                int(i * SQUARE_SIZE + SQUARE_SIZE / 2) + SQUARE_SIZE,
+                            ),
+                            2
+                        )
+                    elif cell_type == 3:
+                        pygame.draw.circle(
+                            self.screen,
+                            TUMBLEWEED,
+                            (
+                                int(j * SQUARE_SIZE + SQUARE_SIZE / 2),
+                                int(i * SQUARE_SIZE + SQUARE_SIZE / 2) + SQUARE_SIZE,
+                            ),
+                            6
+                        )
+                    elif cell_type == 4:
+                        pygame.draw.rect(
+                            self.screen,
+                            PINK,
+                            (
+                                j * SQUARE_SIZE,
+                                i * SQUARE_SIZE + SQUARE_SIZE + SQUARE_SIZE/2,
+                                SQUARE_SIZE,
+                                SQUARE_SIZE/2,
+                            ),
+                        )
+
+                    for k, ghost in enumerate(self.ghost_pos):
+                        g_approximate_pos = np.floor(ghost).astype(int)
+                        pygame.draw.rect(
+                            self.screen,
+                            GHOST_COLOR[k],
+                            (
+                                g_approximate_pos[1] * SQUARE_SIZE,
+                                g_approximate_pos[0] * SQUARE_SIZE + SQUARE_SIZE,
+                                SQUARE_SIZE,
+                                SQUARE_SIZE,
+                            ),
+                        )
+                    p_approximate_pos = np.floor(self.pacman_pos).astype(int)
+                    pygame.draw.circle(
+                        self.screen,
+                        YELLOW,
+                        (
+                            int(p_approximate_pos[1] * SQUARE_SIZE + SQUARE_SIZE / 2),
+                            int(p_approximate_pos[0] * SQUARE_SIZE + SQUARE_SIZE / 2) + SQUARE_SIZE,
+                        ),
+                        8
+                    )
+
+        pygame.display.update()
+        pygame.time.delay(1)
